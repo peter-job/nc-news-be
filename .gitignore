@@ -1,3 +1,4 @@
 node_modules
 knexfile.js
 config
+migrations_and_seeding.md
