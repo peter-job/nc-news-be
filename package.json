@@ -1,12 +1,12 @@
 {
-  "name": "BE2-NC-Knews",
+  "name": "be2-nc-knews",
   "version": "1.0.0",
   "description": "## Northcoders News API",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon listen.js",
     "test": "psql -f db/setup-test.sql && mocha spec/",
-    "lint": "eslint ./ --fix",
+    "lint": "eslint ./",
     "pre-commit": "npm t",
     "posttest": "npm run lint",
     "migrate:make": "knex migrate:make",
@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/northcoders/BE2-NC-Knews#readme",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "knex": "^0.15.2",
     "pg": "^7.6.1"
