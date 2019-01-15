@@ -17,7 +17,12 @@ describe('/', () => {
     connection.destroy();
   });
   // <----- describe 404 /
-  it('GET status 404', () => request.get('/amadeupendpoint').expect(404));
+  it('GET status 404', () => request
+    .get('/amadeupendpoint')
+    .expect(404)
+    .then(({ body }) => {
+      expect(body).to.haveOwnProperty('message');
+    }));
   describe('/api', () => {
     describe('/topics', () => {
       it('GET status:200 should respond with an array of topics', () => request
