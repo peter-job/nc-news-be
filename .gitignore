@@ -2,3 +2,5 @@ node_modules
 knexfile.js
 config
 migrations_and_seeding.md
+Testing_and_error-handling.md
+my_notes.md

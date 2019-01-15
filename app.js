@@ -1,5 +1,6 @@
 const app = require('express')();
+const topicsRouter = require('./routes/topicsRouter');
 
-app.get('/api', (req, res) => res.send('yes?'));
+app.use('/api/topics', topicsRouter);
 
 module.exports = app;

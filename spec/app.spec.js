@@ -1,9 +1,11 @@
 process.env.NODE_ENV = 'test';
 
 const { expect } = require('chai');
-const connection = require('../connection');
+const supertest = require('supertest');
 const app = require('../app');
-const request = require('supertest')(app);
+const connection = require('../db/connection');
+
+const request = supertest(app);
 
 describe('/api', () => {
   // hooks
@@ -15,14 +17,14 @@ describe('/api', () => {
     connection.destroy();
   });
   // test
-  describe('/parties', () => {
-    it('GET status:200 should respond with an array of mp objects', () => request
-      .get('api/parties')
+  describe('/topics', () => {
+    it('GET status:200 should respond with an array of topics', () => request
+      .get('/api/topics')
       .expect(200)
       .then(({ body }) => {
-        expect(body.parties).to.be.an('array');
-        expect(body.parties[0]).to.haveOwnProperty('party');
-        expect(body.parties[0]).to.haveOwnProperty('something');
+        expect(body.topics).to.be.an('array');
+        expect(body.topics[0]).to.haveOwnProperty('slug');
+        expect(body.topics[0]).to.haveOwnProperty('description');
       }));
   });
 });

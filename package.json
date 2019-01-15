@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon listen.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint ./",
+    "test": "psql -f db/setup-test.sql && mocha spec/",
+    "lint": "eslint ./ --fix",
     "pre-commit": "npm t",
     "posttest": "npm run lint",
     "migrate:make": "knex migrate:make",
@@ -26,14 +26,17 @@
   },
   "homepage": "https://github.com/northcoders/BE2-NC-Knews#readme",
   "dependencies": {
+    "express": "^4.16.4",
     "knex": "^0.15.2",
     "pg": "^7.6.1"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
     "eslint": "^5.9.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.14.0",
     "husky": "^1.1.4",
+    "mocha": "^5.2.0",
     "nodemon": "^1.18.9",
     "supertest": "^3.3.0"
   }

@@ -7,10 +7,10 @@ exports.seed = function (knex, Promise) {
   return knex('topics')
     .insert(topicData)
     .returning('*')
-    .then(topicTable => knex('users')
+    .then(() => knex('users')
       .insert(userData)
       .returning('*'))
-    .then((usersTable) => {
+    .then(() => {
       const formattedArticles = articleData.map(({ created_by, created_at, ...restOfArticle }) => ({
         created_at: formateDate(created_at),
         username: created_by,
@@ -20,7 +20,7 @@ exports.seed = function (knex, Promise) {
         .insert(formattedArticles)
         .returning('*');
     })
-    .then((articleTable) => {
+    .then(() => {
       const articlesRef = createRef(articleData, 'title', 'article_id');
       const formattedComments = commentData.map(
         ({
