@@ -17,7 +17,7 @@ exports.postTopic = (req, res, next) => {
     .catch(next);
 };
 
-exports.getTopicArticles = (req, res, next) => {
+exports.getArticlesByTopic = (req, res, next) => {
   const {
     limit = 10,
     p = 1,
@@ -49,6 +49,18 @@ exports.getTopicArticles = (req, res, next) => {
     .then((articles) => {
       if (articles.length === 0) next({ status: 404 });
       else res.status(200).send({ articles });
+    })
+    .catch(next);
+};
+
+exports.postArticleByTopic = (req, res, next) => {
+  const { body } = req;
+  body.topic = req.params.topic;
+  connection('articles')
+    .insert(body)
+    .returning('*')
+    .then(([article]) => {
+      res.status(201).send({ article });
     })
     .catch(next);
 };

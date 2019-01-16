@@ -40,7 +40,7 @@ describe('/', () => {
           expect(body.topics).to.be.an('array');
           expect(body.topics[0]).to.have.keys('slug', 'description');
         }));
-      it('POST status:201 responds with object from body', () => request
+      it('POST status:201 responds with posted topic', () => request
         .post('/api/topics')
         .send({ slug: 'garbage', description: 'all things garbage' })
         .expect(201)
@@ -54,7 +54,6 @@ describe('/', () => {
         .then(({ body }) => {
           expect(body).to.haveOwnProperty('message');
         }));
-      // <---------- 405 test here
       it('PATCH, PUT, DELETE status:405 invalid request', () => {
         const invalidMethods = ['patch', 'put', 'delete'];
         const url = '/api/topics';
@@ -97,7 +96,32 @@ describe('/', () => {
           .then(({ body }) => {
             expect(body).to.haveOwnProperty('message');
           }));
-        // <---------- 405 test here
+        it('POST status:201 responds posted article', () => request
+          .post('/api/topics/mitch/articles')
+          .send({
+            username: 'butter_bridge',
+            title: 'About Mitch.',
+            body: 'This is definitely an article about .... Mitch. Now, lets begin',
+          })
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.article).to.have.keys(
+              'username',
+              'title',
+              'article_id',
+              'created_at',
+              'topic',
+              'body',
+              'votes',
+            );
+            expect(body.article.username).to.equal('butter_bridge');
+            expect(body.article.title).to.equal('About Mitch.');
+            expect(body.article.votes).to.equal(0);
+            expect(body.article.topic).to.equal('mitch');
+            expect(body.article.body).to.equal(
+              'This is definitely an article about .... Mitch. Now, lets begin',
+            );
+          }));
         it('PATCH, PUT, DELETE status:405 invalid request', () => {
           const invalidMethods = ['patch', 'put', 'delete'];
           const url = '/api/topics/faketopic/articles';
