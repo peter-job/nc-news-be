@@ -63,41 +63,48 @@ describe('/', () => {
           expect(requests[0].body).to.have.haveOwnProperty('message');
         });
       });
-    });
-    describe('/topics/:topic/articles', () => {
-      it('GET status:200 responds with array of article objects for a given topic', () => request
-        .get('/api/topics/mitch/articles')
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.articles).to.be.an('array');
-          expect(body.articles).to.have.length(11);
-          expect(body.articles[0]).to.have.keys(
-            'author',
-            'title',
-            'article_id',
-            'votes',
-            'comment_count',
-            'created_at',
-            'topic',
-          );
-          const [article1] = body.articles.filter(
-            article => article.title === 'Living in the shadow of a great man',
-          );
-          expect(article1.comment_count).to.equal('13');
-        }));
-      it('GET status:404 responds with error message', () => request
-        .get('/api/topics/faketopic/articles')
-        .expect(404)
-        .then(({ body }) => {
-          expect(body).to.haveOwnProperty('message');
-        }));
-      // <---------- 405 test here
-      it('PATCH, PUT, DELETE status:405 invalid request', () => {
-        const invalidMethods = ['patch', 'put', 'delete'];
-        const url = '/api/topics/faketopic/articles';
-        const invalidRequests = invalidMethods.map(method => request[method](url).expect(405));
-        return Promise.all(invalidRequests).then((requests) => {
-          expect(requests[0].body).to.have.haveOwnProperty('message');
+      describe('/:topic/articles', () => {
+        it('GET status:200 responds with array of article objects for topic', () => request
+          .get('/api/topics/mitch/articles')
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.articles).to.be.an('array');
+            expect(body.articles).to.have.length(10);
+            expect(body.articles[0]).to.have.keys(
+              'author',
+              'title',
+              'article_id',
+              'votes',
+              'comment_count',
+              'created_at',
+              'topic',
+            );
+          })
+          .then(() => request.get('/api/topics/mitch/articles?sort_by=comment_count&limit=11').expect(200))
+          .then(({ body }) => {
+            expect(body.articles).to.have.length('11');
+            expect(+body.articles[0].comment_count).to.be.lessThan(
+              +body.articles[10].comment_count,
+            );
+          })
+          .then(() => request.get('/api/topics/mitch/articles?&limit=10&p=2').expect(200))
+          .then(({ body }) => {
+            expect(body.articles).to.have.length('1');
+          }));
+        it('GET status:404 responds with error message', () => request
+          .get('/api/topics/faketopic/articles')
+          .expect(404)
+          .then(({ body }) => {
+            expect(body).to.haveOwnProperty('message');
+          }));
+        // <---------- 405 test here
+        it('PATCH, PUT, DELETE status:405 invalid request', () => {
+          const invalidMethods = ['patch', 'put', 'delete'];
+          const url = '/api/topics/faketopic/articles';
+          const invalidRequests = invalidMethods.map(method => request[method](url).expect(405));
+          return Promise.all(invalidRequests).then((requests) => {
+            expect(requests[0].body).to.have.haveOwnProperty('message');
+          });
         });
       });
     });

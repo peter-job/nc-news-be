@@ -18,6 +18,18 @@ exports.postTopic = (req, res, next) => {
 };
 
 exports.getTopicArticles = (req, res, next) => {
+  const {
+    limit = 10,
+    p = 1,
+    sort_by = 'created_at',
+    sort_ascending = true,
+    ...remainingQueries
+  } = req.query;
+
+  const validSortCriteria = ['votes', 'created_at', 'topic', 'comment_count', 'username'];
+  const sort_by_clean = validSortCriteria.includes(sort_by) ? sort_by : 'created_at';
+  const order = sort_ascending ? 'asc' : 'desc';
+
   connection('articles')
     .select(
       'articles.article_id',
@@ -31,6 +43,9 @@ exports.getTopicArticles = (req, res, next) => {
     .leftJoin('comments', 'comments.article_id', '=', 'articles.article_id')
     .groupBy('articles.article_id')
     .count({ comment_count: 'comments.comment_id' })
+    .limit(limit)
+    .offset((p - 1) * limit)
+    .orderBy(sort_by_clean, order)
     .then((articles) => {
       if (articles.length === 0) next({ status: 404 });
       else res.status(200).send({ articles });
