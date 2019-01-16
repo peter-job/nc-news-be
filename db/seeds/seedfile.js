@@ -1,6 +1,6 @@
 const {
   articleData, commentData, userData, topicData,
-} = require('../data/development-data');
+} = require('../data');
 const { createRef, formateDate } = require('../utils');
 
 exports.seed = function (knex, Promise) {
@@ -20,8 +20,8 @@ exports.seed = function (knex, Promise) {
         .insert(formattedArticles)
         .returning('*');
     })
-    .then(() => {
-      const articlesRef = createRef(articleData, 'title', 'article_id');
+    .then((articlesTable) => {
+      const articlesRef = createRef(articlesTable, 'title', 'article_id');
       const formattedComments = commentData.map(
         ({
           created_by, belongs_to, created_at, ...restOfArticle

@@ -36,25 +36,43 @@ describe('/', () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.topics).to.be.an('array');
-        expect(body.topics[0]).to.haveOwnProperty('slug');
-        expect(body.topics[0]).to.haveOwnProperty('description');
+        expect(body.topics[0]).to.have.keys('slug', 'description');
       }));
     it('POST status:201 responds with object from body', () => request
       .post('/api/topics')
       .send({ slug: 'garbage', description: 'all things garbage' })
       .expect(201)
       .then(({ body }) => {
-        expect(body.topic).to.be.an('object');
-        expect(body.topic).to.haveOwnProperty('slug');
-        expect(body.topic).to.haveOwnProperty('description');
+        expect(body.topic).to.eql({ slug: 'garbage', description: 'all things garbage' });
       }));
-    // <----- describe 400 /api/topics*
     it('POST status:400 responds with error message', () => request
       .post('/api/topics')
       .send({ doesnt: 'made', exist: 'up' })
       .expect(400)
       .then(({ body }) => {
         expect(body).to.haveOwnProperty('message');
+      }));
+  });
+  describe('/topics/:topic/articles', () => {
+    it('GET status:200 responds with array of article objects for a given topic', () => request
+      .get('/api/topics/mitch/articles')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).to.be.an('array');
+        expect(body.articles).to.have.length(12);
+        expect(body.articles[0]).to.have.keys(
+          'author',
+          'title',
+          'article_id',
+          'votes',
+          'comment_count',
+          'created_at',
+          'topic',
+        );
+        const [article1] = body.articles.filter(
+          article => article.title === 'Living in the shadow of a great man',
+        );
+        expect(article1.comment_count).to.equal('13');
       }));
   });
 });

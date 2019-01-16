@@ -20,5 +20,12 @@ exports.handle500 = (err, req, res, next) => {
   if (process.env.NODE_ENV !== 'test') {
     console.log(`500 - error code: ${err.code} --- message: ${err.message}`);
   }
-  res.status(500).send({ message: '400: Server Error' });
+  res.status(500).send({ message: '500: Server Error' });
+};
+
+exports.handle405 = (req, res, next) => {
+  if (process.env.NODE_ENV !== 'test') {
+    console.log(`405 - Method: ${req.method}`);
+  }
+  res.status(405).send({ message: '405: Invalid request method' });
 };
