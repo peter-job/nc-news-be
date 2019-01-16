@@ -74,5 +74,13 @@ describe('/', () => {
         );
         expect(article1.comment_count).to.equal('13');
       }));
+    // <---------- 404 test here
+    it('GET status:404 responds with error message', () => request
+      .post('/api/topics/faketopic/articles')
+      .expect(404)
+      .then(({ body }) => {
+        expect(body).to.haveOwnProperty('message');
+      }));
+    // <---------- 405 test here
   });
 });
