@@ -27,9 +27,13 @@ exports.getTopicArticles = (req, res, next) => {
       'articles.created_at',
       'articles.topic',
     )
+    .where(req.params)
     .leftJoin('comments', 'comments.article_id', '=', 'articles.article_id')
     .groupBy('articles.article_id')
     .count({ comment_count: 'comments.comment_id' })
-    .then(articles => res.status(200).send({ articles }))
+    .then((articles) => {
+      if (articles.length === 0) next({ status: 404 });
+      else res.status(200).send({ articles });
+    })
     .catch(next);
 };

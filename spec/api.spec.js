@@ -59,7 +59,7 @@ describe('/', () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.articles).to.be.an('array');
-        expect(body.articles).to.have.length(12);
+        expect(body.articles).to.have.length(11);
         expect(body.articles[0]).to.have.keys(
           'author',
           'title',
@@ -74,9 +74,8 @@ describe('/', () => {
         );
         expect(article1.comment_count).to.equal('13');
       }));
-    // <---------- 404 test here
     it('GET status:404 responds with error message', () => request
-      .post('/api/topics/faketopic/articles')
+      .get('/api/topics/faketopic/articles')
       .expect(404)
       .then(({ body }) => {
         expect(body).to.haveOwnProperty('message');

@@ -7,6 +7,9 @@ router
   .get(getAllTopics)
   .post(postTopic)
   .all(handle405);
-router.get('/:topic/articles', getTopicArticles);
+router
+  .route('/:topic/articles')
+  .get(getTopicArticles)
+  .all(handle405);
 
 module.exports = router;
