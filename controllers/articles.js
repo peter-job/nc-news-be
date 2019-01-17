@@ -74,3 +74,26 @@ exports.postArticleByTopic = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.getArticleById = (req, res, next) => {
+  const params = { 'articles.article_id': req.params.article_id };
+  connection('articles')
+    .select(
+      'articles.article_id',
+      'articles.username as author',
+      'title',
+      'articles.body',
+      'articles.votes as votes',
+      'articles.created_at',
+      'articles.topic',
+    )
+    .where(params)
+    .leftJoin('comments', 'comments.article_id', '=', 'articles.article_id')
+    .groupBy('articles.article_id')
+    .count({ comment_count: 'comments.comment_id' })
+    .then(([article]) => {
+      if (!article) next({ status: 404 });
+      else res.status(200).send({ article });
+    })
+    .catch(next);
+};

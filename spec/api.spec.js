@@ -184,7 +184,22 @@ describe('/', () => {
           expect(body.articles).to.have.length('2');
         }));
       describe('/:article_id', () => {
-        it('GET status:200 responds with an article object', () => request.get('/api/articles/1').expect(200));
+        it('GET status:200 responds with an article object', () => request.get('/api/articles/1').expect(200).then(({ body }) => {
+          expect(body.article).to.have.keys('author',
+            'title',
+            'article_id',
+            'votes',
+            'body',
+            'comment_count',
+            'created_at',
+            'topic');
+          expect(body.article.article_id).to.equal(1);
+          expect(body.article.title).to.equal('Living in the shadow of a great man');
+          expect(body.article.body).to.equal('I find this existence challenging');
+          expect(body.article.votes).to.equal(100);
+          expect(body.article.topic).to.equal('mitch');
+          expect(body.article.author).to.equal('butter_bridge');
+        }));
       });
     });
   });
