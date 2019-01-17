@@ -5,13 +5,13 @@ exports.getArticlesByTopic = (req, res, next) => {
     limit = 10,
     p = 1,
     sort_by = 'created_at',
-    order = 'asc',
+    order = 'desc',
     ...remainingQueries
   } = req.query;
 
   const validSortCriteria = ['votes', 'created_at', 'topic', 'comment_count', 'username'];
   const sort_by_clean = validSortCriteria.includes(sort_by) ? sort_by : 'created_at';
-  const order_clean = order === 'desc' ? 'desc' : 'asc';
+  const order_clean = order === 'asc' ? 'asc' : 'desc';
 
   connection('articles')
     .select(

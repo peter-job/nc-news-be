@@ -82,7 +82,7 @@ describe('/', () => {
           .then(() => request.get('/api/topics/mitch/articles?sort_by=comment_count&limit=11').expect(200))
           .then(({ body }) => {
             expect(body.articles).to.have.length('11');
-            expect(+body.articles[0].comment_count).to.be.lessThan(
+            expect(+body.articles[0].comment_count).to.be.at.least(
               +body.articles[10].comment_count,
             );
           })
@@ -95,10 +95,10 @@ describe('/', () => {
             expect(body.articles).to.have.length('1');
           })
           .then(() => request
-            .get('/api/topics/mitch/articles?&sort_by=comment_count&order=desc')
+            .get('/api/topics/mitch/articles?&sort_by=comment_count&order=asc')
             .expect(200))
           .then(({ body }) => {
-            expect(+body.articles[0].comment_count).to.be.at.least(
+            expect(+body.articles[0].comment_count).to.be.at.most(
               +body.articles[9].comment_count,
             );
           }));
