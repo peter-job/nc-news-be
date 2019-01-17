@@ -95,10 +95,12 @@ describe('/', () => {
             expect(body.articles).to.have.length('1');
           })
           .then(() => request
-            .get('/api/topics/mitch/articles?&sort_by=comment_count&sort_ascending=false')
+            .get('/api/topics/mitch/articles?&sort_by=comment_count&order=desc')
             .expect(200))
           .then(({ body }) => {
-            expect(body.articles[0].comment_count).to.be.moreThan(body.articles[9].comment_count);
+            expect(+body.articles[0].comment_count).to.be.at.least(
+              +body.articles[9].comment_count,
+            );
           }));
         it('GET status:404 responds with error message', () => request
           .get('/api/topics/faketopic/articles')
