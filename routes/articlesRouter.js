@@ -6,3 +6,5 @@ router
   .route('/')
   .get(getArticles)
   .all(handle405);
+
+module.exports = router;
