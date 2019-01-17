@@ -252,6 +252,11 @@ describe('/', () => {
                 });
               });
             });
+            it('DELETE status:204 deletes the comment at given comment_id and and responds with  no-content', () => {
+              request.delete('/api/articles/1/comments/18').expect(204).then(({ body }) => {
+                expect(body).to.eql({});
+              });
+            });
           });
         });
       });
