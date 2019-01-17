@@ -9,6 +9,7 @@ const {
   getCommentsForArticle,
   postCommentForArticle,
   patchCommentVotes,
+  deleteComment,
 } = require('../controllers/comments');
 const { handle405 } = require('../error');
 
@@ -29,6 +30,8 @@ router
   .get(getCommentsForArticle)
   .post(postCommentForArticle);
 
-router.route('/:article_id/comments/:comment_id').patch(patchCommentVotes);
-
+router
+  .route('/:article_id/comments/:comment_id')
+  .patch(patchCommentVotes)
+  .delete(deleteComment);
 module.exports = router;

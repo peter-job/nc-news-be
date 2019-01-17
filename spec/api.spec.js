@@ -245,16 +245,17 @@ describe('/', () => {
             expect(body.comment.votes).to.equal(0);
           }));
           describe('/:comment_id', () => {
+            it('DELETE status:204 deletes the comment at given comment_id and and responds with no-content', () => {
+              request.delete('/api/articles/1/comments/18').expect(204).then(({ body }) => {
+                expect(body).to.eql({});
+                return connection('comments').select('*').where({ comment_id: 18 }).then(([article]) => expect(article).to.equal(undefined));
+              });
+            });
             it('PATCH status:200 accepts an object with votes and returns the updated comment', () => {
               request.patch('/api/articles/1/comments/18').send({ inc_votes: 2 }).expect(200).then(({ body }) => {
                 expect(body.comment).to.eql({
                   comment_id: 18, author: 'butter_bridge', article_id: 1, votes: 18, created_at: '2000-11-26T12:36:03.389Z', body: 'This morning, I showered for nine minutes.',
                 });
-              });
-            });
-            it('DELETE status:204 deletes the comment at given comment_id and and responds with  no-content', () => {
-              request.delete('/api/articles/1/comments/18').expect(204).then(({ body }) => {
-                expect(body).to.eql({});
               });
             });
           });
