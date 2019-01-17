@@ -78,8 +78,10 @@ describe('/', () => {
               'created_at',
               'topic',
             );
-          })
-          .then(() => request.get('/api/topics/mitch/articles?sort_by=comment_count&limit=11').expect(200))
+          }));
+        it("GET status:200 accepts queries 'limit', 'p', 'sort_by' and 'order'", () => request
+          .get('/api/topics/mitch/articles?sort_by=comment_count&limit=11')
+          .expect(200)
           .then(({ body }) => {
             expect(body.articles).to.have.length('11');
             expect(+body.articles[0].comment_count).to.be.at.least(

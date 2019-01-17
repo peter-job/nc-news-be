@@ -2,11 +2,7 @@ const connection = require('../db/connection');
 
 exports.getArticles = (req, res, next) => {
   const {
-    limit = 10,
-    p = 1,
-    sort_by = 'created_at',
-    order = 'desc',
-    ...remainingQueries
+    limit = 10, p = 1, sort_by = 'created_at', order = 'desc',
   } = req.query;
 
   const validSortCriteria = ['votes', 'created_at', 'topic', 'comment_count', 'username'];
@@ -37,11 +33,7 @@ exports.getArticles = (req, res, next) => {
 
 exports.getArticlesByTopic = (req, res, next) => {
   const {
-    limit = 10,
-    p = 1,
-    sort_by = 'created_at',
-    order = 'desc',
-    ...remainingQueries
+    limit = 10, p = 1, sort_by = 'created_at', order = 'desc',
   } = req.query;
 
   const validSortCriteria = ['votes', 'created_at', 'topic', 'comment_count', 'username'];
