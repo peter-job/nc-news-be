@@ -200,6 +200,14 @@ describe('/', () => {
           expect(body.article.topic).to.equal('mitch');
           expect(body.article.author).to.equal('butter_bridge');
         }));
+        it('PATCH status:200 accepts an object with votes and returns the updated article', () => request.patch('/api/articles/1').send({ inc_votes: 3 }).expect(200).then(({ body }) => {
+          expect(body.article.article_id).to.equal(1);
+          expect(body.article.title).to.equal('Living in the shadow of a great man');
+          expect(body.article.body).to.equal('I find this existence challenging');
+          expect(body.article.votes).to.equal(103);
+          expect(body.article.topic).to.equal('mitch');
+          expect(body.article.author).to.equal('butter_bridge');
+        }));
       });
     });
   });

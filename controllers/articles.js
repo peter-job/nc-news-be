@@ -97,3 +97,18 @@ exports.getArticleById = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.patchArticleById = (req, res, next) => {
+  const params = { 'articles.article_id': req.params.article_id };
+  connection('articles')
+    .where(params)
+    .increment('votes', req.body.inc_votes)
+    .returning('*')
+    .then(([article]) => {
+      const { username: author, ...restOfProperties } = article;
+      const formattedArticle = { author, ...restOfProperties };
+      if (!article) next({ status: 404 });
+      else res.status(200).send({ article: formattedArticle });
+    })
+    .catch(next);
+};

@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { getArticles, getArticleById } = require('../controllers/articles');
+const { getArticles, getArticleById, patchArticleById } = require('../controllers/articles');
 const { handle405 } = require('../error');
 
 router
@@ -7,5 +7,8 @@ router
   .get(getArticles)
   .all(handle405);
 
-router.route('/:article_id').get(getArticleById);
+router
+  .route('/:article_id')
+  .get(getArticleById)
+  .patch(patchArticleById);
 module.exports = router;
