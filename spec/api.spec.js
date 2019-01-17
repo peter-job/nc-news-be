@@ -89,6 +89,16 @@ describe('/', () => {
           .then(() => request.get('/api/topics/mitch/articles?&limit=10&p=2').expect(200))
           .then(({ body }) => {
             expect(body.articles).to.have.length('1');
+          })
+          .then(() => request.get('/api/topics/mitch/articles?&limit=10&p=2').expect(200))
+          .then(({ body }) => {
+            expect(body.articles).to.have.length('1');
+          })
+          .then(() => request
+            .get('/api/topics/mitch/articles?&sort_by=comment_count&sort_ascending=false')
+            .expect(200))
+          .then(({ body }) => {
+            expect(body.articles[0].comment_count).to.be.moreThan(body.articles[9].comment_count);
           }));
         it('GET status:404 responds with error message', () => request
           .get('/api/topics/faketopic/articles')
