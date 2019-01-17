@@ -152,7 +152,7 @@ describe('/', () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.articles).to.be.an('array');
-          // expect(body.articles).to.have.length(10);
+          expect(body.articles).to.have.length(10);
           expect(body.articles[0]).to.have.keys(
             'author',
             'title',
@@ -208,6 +208,52 @@ describe('/', () => {
           expect(body.article.topic).to.equal('mitch');
           expect(body.article.author).to.equal('butter_bridge');
         }));
+        it('DELETE status:204 accepts an object with votes and returns the updated article', () => request.delete('/api/articles/1').expect(204).then(({ body }) => {
+          expect(body).to.eql({});
+          return connection('articles').where({ article_id: 1 }).then(([article]) => expect(article).to.equal(undefined));
+        }));
+        describe('/comments', () => {
+          it('GET status:200 responds with an array of comments for the given article_id', () => request.get('/api/articles/1/comments').expect(200).then(({ body }) => {
+            expect(body.comments).to.be.an('array');
+            expect(body.comments[0]).to.have.keys('comment_id', 'votes', 'created_at', 'author', 'body');
+          }));
+          it("GET status:200 accepts queries 'sort_by', 'order', 'limit' and 'p'", () => request
+            .get('/api/articles/1/comments?sort_by=votes')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comments).to.have.length('10');
+              expect(body.comments[0].votes).to.be.greaterThan(
+                body.comments[9].votes,
+              );
+            })
+            .then(() => request.get('/api/articles/1/comments?sort_by=votes&order=asc').expect(200))
+            .then(({ body }) => {
+              expect(body.comments).to.have.length('10');
+              expect(body.comments[0].votes).to.be.lessThan(
+                body.comments[9].votes,
+              );
+            })
+            .then(() => request.get('/api/articles/1/comments?&limit=3&p=2').expect(200))
+            .then(({ body }) => {
+              expect(body.comments).to.have.length('3');
+              expect(body.comments[0].body).to.equal('I hate streaming noses');
+            }));
+          it('POST status:201 accepts an object with a username and body and responds with the posted comment', () => request.post('/api/articles/1/comments').send({ username: 'butter_bridge', body: 'fantastic article btw' }).expect(201).then(({ body }) => {
+            expect(body.comment).to.have.keys('article_id', 'body', 'comment_id', 'created_at', 'username', 'votes');
+            expect(body.comment.article_id).to.equal(1);
+            expect(body.comment.username).to.equal('butter_bridge');
+            expect(body.comment.votes).to.equal(0);
+          }));
+          describe('/:comment_id', () => {
+            it('PATCH status:200 accepts an object with votes and returns the updated comment', () => {
+              request.patch('/api/articles/1/comments/18').send({ inc_votes: 2 }).expect(200).then(({ body }) => {
+                expect(body.comment).to.eql({
+                  comment_id: 18, author: 'butter_bridge', article_id: 1, votes: 18, created_at: '2000-11-26T12:36:03.389Z', body: 'This morning, I showered for nine minutes.',
+                });
+              });
+            });
+          });
+        });
       });
     });
   });

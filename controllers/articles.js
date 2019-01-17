@@ -98,7 +98,7 @@ exports.getArticleById = (req, res, next) => {
     .catch(next);
 };
 
-exports.patchArticleById = (req, res, next) => {
+exports.patchArticleVotes = (req, res, next) => {
   const params = { 'articles.article_id': req.params.article_id };
   connection('articles')
     .where(params)
@@ -111,4 +111,14 @@ exports.patchArticleById = (req, res, next) => {
       else res.status(200).send({ article: formattedArticle });
     })
     .catch(next);
+};
+
+exports.deleteArticleById = (req, res, next) => {
+  connection('comments')
+    .where(req.params)
+    .del()
+    .then(() => connection('articles')
+      .where(req.params)
+      .del())
+    .then(() => res.status(204).send({}));
 };
