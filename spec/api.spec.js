@@ -267,6 +267,9 @@ describe('/', () => {
         expect(body.users).to.be.an('array');
         expect(body.users[0]).to.eql({ username: 'butter_bridge', avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg', name: 'jonny' });
       }));
+      describe('/:username', () => {
+        it('GET status:200 responds with a user object', () => request.get('/api/users/butter_bridge').expect(200).then(({ body }) => expect(body.user).to.eql({ username: 'butter_bridge', avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg', name: 'jonny' })));
+      });
     });
   });
 });
