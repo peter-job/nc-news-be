@@ -84,7 +84,7 @@ describe('/', () => {
           .expect(200)
           .then(({ body }) => {
             expect(body.articles).to.have.length('11');
-            expect(+body.articles[0].comment_count).to.be.at.least(
+            expect(+body.articles[0].comment_count).to.be.greaterThan(
               +body.articles[10].comment_count,
             );
           })
@@ -163,6 +163,29 @@ describe('/', () => {
             'topic',
           );
         }));
+      it("GET status:200 accepts queries 'sort_by', 'order', 'limit' and 'p'", () => request
+        .get('/api/articles?sort_by=comment_count')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).to.have.length('10');
+          expect(+body.articles[0].comment_count).to.be.greaterThan(
+            +body.articles[9].comment_count,
+          );
+        })
+        .then(() => request.get('/api/articles?sort_by=comment_count&order=asc').expect(200))
+        .then(({ body }) => {
+          expect(body.articles).to.have.length('10');
+          expect(+body.articles[0].comment_count).to.be.lessThan(
+            +body.articles[9].comment_count,
+          );
+        })
+        .then(() => request.get('/api/articles?&limit=10&p=2').expect(200))
+        .then(({ body }) => {
+          expect(body.articles).to.have.length('2');
+        }));
+      describe('/:article_id', () => {
+        it('GET status:200 responds with an article object', () => request.get('/api/articles/1').expect(200));
+      });
     });
   });
 });
