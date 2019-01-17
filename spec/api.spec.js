@@ -144,5 +144,23 @@ describe('/', () => {
         });
       });
     });
+    describe('/articles', () => {
+      it('GET status:200 responds with an array of articles', () => request
+        .get('/api/articles')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).to.be.an('array');
+          // expect(body.articles).to.have.length(10);
+          expect(body.articles[0]).to.have.keys(
+            'author',
+            'title',
+            'article_id',
+            'votes',
+            'comment_count',
+            'created_at',
+            'topic',
+          );
+        }));
+    });
   });
 });
