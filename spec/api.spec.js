@@ -262,5 +262,11 @@ describe('/', () => {
         });
       });
     });
+    describe('/users', () => {
+      it('GET status:200 responds with an array of user objects', () => request.get('/api/users').expect(200).then(({ body }) => {
+        expect(body.users).to.be.an('array');
+        expect(body.users[0]).to.eql({ username: 'butter_bridge', avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg', name: 'jonny' });
+      }));
+    });
   });
 });
