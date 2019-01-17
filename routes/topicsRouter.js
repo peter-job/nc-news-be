@@ -1,10 +1,6 @@
 const router = require('express').Router();
-const {
-  getAllTopics,
-  postTopic,
-  getArticlesByTopic,
-  postArticleByTopic,
-} = require('../controllers/topics');
+const { getAllTopics, postTopic } = require('../controllers/topics');
+const { getArticlesByTopic, postArticleByTopic } = require('../controllers/articles');
 const { handle405 } = require('../error');
 
 router
