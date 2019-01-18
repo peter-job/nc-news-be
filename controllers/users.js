@@ -11,6 +11,9 @@ exports.getUserById = (req, res, next) => {
   connection('users')
     .select('*')
     .where(req.params)
-    .then(([user]) => res.status(200).send({ user }))
+    .then(([user]) => {
+      if (!user) next({ status: 404 });
+      else res.status(200).send({ user });
+    })
     .catch(next);
 };

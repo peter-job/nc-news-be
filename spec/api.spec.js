@@ -359,7 +359,6 @@ describe('/', () => {
                     .then(([article]) => expect(article).to.equal(undefined));
                 });
             });
-            // 404 TESTING HERE
             it('PATCH status:200 accepts an object with votes and returns the updated comment', () => {
               request
                 .patch('/api/articles/1/comments/18')
@@ -375,6 +374,14 @@ describe('/', () => {
                     body: 'This morning, I showered for nine minutes.',
                   });
                 });
+            });
+            it('DELETE and PATCH status:404 responds with error message', () => {
+              const methods = ['delete', 'patch'];
+              const url = '/api/articles/123456/comments/2222';
+              const reqs = methods.map(method => request[method](url).expect(404));
+              return Promise.all(reqs).then((requests) => {
+                expect(requests[0].body).to.haveOwnProperty('message');
+              });
             });
             it('GET, PUT, POST status:405 invalid request', () => {
               const invalidMethods = ['get', 'put', 'post'];
@@ -419,7 +426,13 @@ describe('/', () => {
             avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg',
             name: 'jonny',
           })));
-        // 404 TESTING HERE
+        it('GET status:404 responds with error message', () => request
+          .get('/api/users/amadeupuser')
+          .expect(404)
+          .then(({ body }) => {
+            expect(body).to.haveOwnProperty('message');
+          }));
+
         it('POST, PATCH, PUT, DELETE status:405 invalid request', () => {
           const invalidMethods = ['post', 'patch', 'put', 'delete'];
           const url = '/api/users/butter_bridge';

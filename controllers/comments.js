@@ -39,10 +39,10 @@ exports.patchCommentVotes = (req, res, next) => {
     .increment('votes', req.body.inc_votes)
     .returning('*')
     .then(([comment]) => {
+      if (!comment) next({ status: 404 });
       const { username: author, ...restOfProperties } = comment;
       const formattedComment = { author, ...restOfProperties };
-      if (!comment) next({ status: 404 });
-      else res.status(200).send({ comment: formattedComment });
+      res.status(200).send({ comment: formattedComment });
     })
     .catch(next);
 };
@@ -51,8 +51,12 @@ exports.deleteComment = (req, res, next) => {
   connection('comments')
     .where(req.params)
     .delete()
-    .then(() => {
-      res.status(204).send({});
+    .then((deleted) => {
+      if (!deleted) {
+        next({ status: 404 });
+      } else {
+        res.status(204).send({});
+      }
     })
     .catch(next);
 };
