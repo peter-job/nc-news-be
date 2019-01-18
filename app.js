@@ -3,9 +3,18 @@ const bodyparser = require('body-parser');
 const usersRouter = require('./routes/usersRouter');
 const articlesRouter = require('./routes/articlesRouter');
 const topicsRouter = require('./routes/topicsRouter');
-const { handle400, handle404, handle500 } = require('./error');
+const { sendEndpoints } = require('./controllers/api.js');
+const {
+  handle400, handle404, handle500, handle405,
+} = require('./error');
 
 app.use(bodyparser.json());
+
+app
+  .route('/api')
+  .get(sendEndpoints)
+  .all(handle405);
+
 app.use('/api/articles', articlesRouter);
 app.use('/api/topics', topicsRouter);
 app.use('/api/users', usersRouter);

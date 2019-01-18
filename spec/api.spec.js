@@ -4,6 +4,7 @@ const { expect } = require('chai');
 const supertest = require('supertest');
 const app = require('../app');
 const connection = require('../db/connection');
+const { endpoints } = require('../controllers/api');
 
 const request = supertest(app);
 
@@ -25,12 +26,20 @@ describe('/', () => {
     }));
 
   describe('/api', () => {
-    it('GET status 404 responds with error message', () => request
+    it('GET status 200 responds with json describing all endpoints in api', () => request
       .get('/api')
-      .expect(404)
+      .expect(200)
       .then(({ body }) => {
-        expect(body).to.haveOwnProperty('message');
+        expect(body).to.eql(endpoints);
       }));
+    it('POST, PATCH, PUT, DELETE status:405 invalid request', () => {
+      const invalidMethods = ['post', 'patch', 'put', 'delete'];
+      const url = '/api';
+      const invalidRequests = invalidMethods.map(method => request[method](url).expect(405));
+      return Promise.all(invalidRequests).then((requests) => {
+        expect(requests[0].body).to.have.haveOwnProperty('message');
+      });
+    });
 
     describe('/topics', () => {
       it('GET status:200 responds with an array of topics', () => request
@@ -175,100 +184,157 @@ describe('/', () => {
         .then(() => request.get('/api/articles?sort_by=comment_count&order=asc').expect(200))
         .then(({ body }) => {
           expect(body.articles).to.have.length('10');
-          expect(+body.articles[0].comment_count).to.be.lessThan(
-            +body.articles[9].comment_count,
-          );
+          expect(+body.articles[0].comment_count).to.be.lessThan(+body.articles[9].comment_count);
         })
         .then(() => request.get('/api/articles?&limit=10&p=2').expect(200))
         .then(({ body }) => {
           expect(body.articles).to.have.length('2');
         }));
       describe('/:article_id', () => {
-        it('GET status:200 responds with an article object', () => request.get('/api/articles/1').expect(200).then(({ body }) => {
-          expect(body.article).to.have.keys('author',
-            'title',
-            'article_id',
-            'votes',
-            'body',
-            'comment_count',
-            'created_at',
-            'topic');
-          expect(body.article.article_id).to.equal(1);
-          expect(body.article.title).to.equal('Living in the shadow of a great man');
-          expect(body.article.body).to.equal('I find this existence challenging');
-          expect(body.article.votes).to.equal(100);
-          expect(body.article.topic).to.equal('mitch');
-          expect(body.article.author).to.equal('butter_bridge');
-        }));
-        it('PATCH status:200 accepts an object with votes and returns the updated article', () => request.patch('/api/articles/1').send({ inc_votes: 3 }).expect(200).then(({ body }) => {
-          expect(body.article.article_id).to.equal(1);
-          expect(body.article.title).to.equal('Living in the shadow of a great man');
-          expect(body.article.body).to.equal('I find this existence challenging');
-          expect(body.article.votes).to.equal(103);
-          expect(body.article.topic).to.equal('mitch');
-          expect(body.article.author).to.equal('butter_bridge');
-        }));
-        it('DELETE status:204 accepts an object with votes and returns the updated article', () => request.delete('/api/articles/1').expect(204).then(({ body }) => {
-          expect(body).to.eql({});
-          return connection('articles').where({ article_id: 1 }).then(([article]) => expect(article).to.equal(undefined));
-        }));
-        describe('/comments', () => {
-          it('GET status:200 responds with an array of comments for the given article_id', () => request.get('/api/articles/1/comments').expect(200).then(({ body }) => {
-            expect(body.comments).to.be.an('array');
-            expect(body.comments[0]).to.have.keys('comment_id', 'votes', 'created_at', 'author', 'body');
+        it('GET status:200 responds with an article object', () => request
+          .get('/api/articles/1')
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.article).to.have.keys(
+              'author',
+              'title',
+              'article_id',
+              'votes',
+              'body',
+              'comment_count',
+              'created_at',
+              'topic',
+            );
+            expect(body.article.article_id).to.equal(1);
+            expect(body.article.title).to.equal('Living in the shadow of a great man');
+            expect(body.article.body).to.equal('I find this existence challenging');
+            expect(body.article.votes).to.equal(100);
+            expect(body.article.topic).to.equal('mitch');
+            expect(body.article.author).to.equal('butter_bridge');
           }));
+        it('PATCH status:200 accepts an object with votes and returns the updated article', () => request
+          .patch('/api/articles/1')
+          .send({ inc_votes: 3 })
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.article.article_id).to.equal(1);
+            expect(body.article.title).to.equal('Living in the shadow of a great man');
+            expect(body.article.body).to.equal('I find this existence challenging');
+            expect(body.article.votes).to.equal(103);
+            expect(body.article.topic).to.equal('mitch');
+            expect(body.article.author).to.equal('butter_bridge');
+          }));
+        it('DELETE status:204 accepts an object with votes and returns the updated article', () => request
+          .delete('/api/articles/1')
+          .expect(204)
+          .then(({ body }) => {
+            expect(body).to.eql({});
+            return connection('articles')
+              .where({ article_id: 1 })
+              .then(([article]) => expect(article).to.equal(undefined));
+          }));
+        describe('/comments', () => {
+          it('GET status:200 responds with an array of comments for the given article_id', () => request
+            .get('/api/articles/1/comments')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body.comments).to.be.an('array');
+              expect(body.comments[0]).to.have.keys(
+                'comment_id',
+                'votes',
+                'created_at',
+                'author',
+                'body',
+              );
+            }));
           it("GET status:200 accepts queries 'sort_by', 'order', 'limit' and 'p'", () => request
             .get('/api/articles/1/comments?sort_by=votes')
             .expect(200)
             .then(({ body }) => {
               expect(body.comments).to.have.length('10');
-              expect(body.comments[0].votes).to.be.greaterThan(
-                body.comments[9].votes,
-              );
+              expect(body.comments[0].votes).to.be.greaterThan(body.comments[9].votes);
             })
             .then(() => request.get('/api/articles/1/comments?sort_by=votes&order=asc').expect(200))
             .then(({ body }) => {
               expect(body.comments).to.have.length('10');
-              expect(body.comments[0].votes).to.be.lessThan(
-                body.comments[9].votes,
-              );
+              expect(body.comments[0].votes).to.be.lessThan(body.comments[9].votes);
             })
             .then(() => request.get('/api/articles/1/comments?&limit=3&p=2').expect(200))
             .then(({ body }) => {
               expect(body.comments).to.have.length('3');
               expect(body.comments[0].body).to.equal('I hate streaming noses');
             }));
-          it('POST status:201 accepts an object with a username and body and responds with the posted comment', () => request.post('/api/articles/1/comments').send({ username: 'butter_bridge', body: 'fantastic article btw' }).expect(201).then(({ body }) => {
-            expect(body.comment).to.have.keys('article_id', 'body', 'comment_id', 'created_at', 'username', 'votes');
-            expect(body.comment.article_id).to.equal(1);
-            expect(body.comment.username).to.equal('butter_bridge');
-            expect(body.comment.votes).to.equal(0);
-          }));
+          it('POST status:201 accepts an object with a username and body and responds with the posted comment', () => request
+            .post('/api/articles/1/comments')
+            .send({ username: 'butter_bridge', body: 'fantastic article btw' })
+            .expect(201)
+            .then(({ body }) => {
+              expect(body.comment).to.have.keys(
+                'article_id',
+                'body',
+                'comment_id',
+                'created_at',
+                'username',
+                'votes',
+              );
+              expect(body.comment.article_id).to.equal(1);
+              expect(body.comment.username).to.equal('butter_bridge');
+              expect(body.comment.votes).to.equal(0);
+            }));
           describe('/:comment_id', () => {
             it('DELETE status:204 deletes the comment at given comment_id and and responds with no-content', () => {
-              request.delete('/api/articles/1/comments/18').expect(204).then(({ body }) => {
-                expect(body).to.eql({});
-                return connection('comments').select('*').where({ comment_id: 18 }).then(([article]) => expect(article).to.equal(undefined));
-              });
+              request
+                .delete('/api/articles/1/comments/18')
+                .expect(204)
+                .then(({ body }) => {
+                  expect(body).to.eql({});
+                  return connection('comments')
+                    .select('*')
+                    .where({ comment_id: 18 })
+                    .then(([article]) => expect(article).to.equal(undefined));
+                });
             });
             it('PATCH status:200 accepts an object with votes and returns the updated comment', () => {
-              request.patch('/api/articles/1/comments/18').send({ inc_votes: 2 }).expect(200).then(({ body }) => {
-                expect(body.comment).to.eql({
-                  comment_id: 18, author: 'butter_bridge', article_id: 1, votes: 18, created_at: '2000-11-26T12:36:03.389Z', body: 'This morning, I showered for nine minutes.',
+              request
+                .patch('/api/articles/1/comments/18')
+                .send({ inc_votes: 2 })
+                .expect(200)
+                .then(({ body }) => {
+                  expect(body.comment).to.eql({
+                    comment_id: 18,
+                    author: 'butter_bridge',
+                    article_id: 1,
+                    votes: 18,
+                    created_at: '2000-11-26T12:36:03.389Z',
+                    body: 'This morning, I showered for nine minutes.',
+                  });
                 });
-              });
             });
           });
         });
       });
     });
     describe('/users', () => {
-      it('GET status:200 responds with an array of user objects', () => request.get('/api/users').expect(200).then(({ body }) => {
-        expect(body.users).to.be.an('array');
-        expect(body.users[0]).to.eql({ username: 'butter_bridge', avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg', name: 'jonny' });
-      }));
+      it('GET status:200 responds with an array of user objects', () => request
+        .get('/api/users')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.users).to.be.an('array');
+          expect(body.users[0]).to.eql({
+            username: 'butter_bridge',
+            avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg',
+            name: 'jonny',
+          });
+        }));
       describe('/:username', () => {
-        it('GET status:200 responds with a user object', () => request.get('/api/users/butter_bridge').expect(200).then(({ body }) => expect(body.user).to.eql({ username: 'butter_bridge', avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg', name: 'jonny' })));
+        it('GET status:200 responds with a user object', () => request
+          .get('/api/users/butter_bridge')
+          .expect(200)
+          .then(({ body }) => expect(body.user).to.eql({
+            username: 'butter_bridge',
+            avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg',
+            name: 'jonny',
+          })));
       });
     });
   });
