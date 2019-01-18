@@ -1,5 +1,5 @@
 exports.handle400 = (err, req, res, next) => {
-  const codes = ['42703'];
+  const codes = ['42703', '23503'];
   if (codes.includes(err.code)) {
     if (process.env.NODE_ENV !== 'test') {
       console.log(`400 - error code: ${err.code} - message: ${err.toString()}`);

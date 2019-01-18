@@ -58,8 +58,15 @@ describe('/', () => {
         }));
       it('POST status:400 responds with error message', () => request
         .post('/api/topics')
-        .send({ doesnt: 'made', exist: 'up' })
+        .send({ username: 1212121, title: 'up', body: {} })
         .expect(400)
+        .then(({ body }) => {
+          expect(body).to.haveOwnProperty('message');
+        })
+        .then(() => request
+          .post('/api/topics')
+          .send({ doesnt: 'sdada', exist: 'up' })
+          .expect(400))
         .then(({ body }) => {
           expect(body).to.haveOwnProperty('message');
         }));
@@ -145,6 +152,20 @@ describe('/', () => {
               'This is definitely an article about .... Mitch. Now, lets begin',
             );
           }));
+        it('POST status:400 responds with error message', () => request
+          .post('/api/topics/mitch/articles')
+          .send({ username: 1212121, title: 'up', body: {} })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body).to.haveOwnProperty('message');
+          })
+          .then(() => request
+            .post('/api/topics/mitch/articles')
+            .send({ doesnt: 'sdada', exist: 'up' })
+            .expect(400))
+          .then(({ body }) => {
+            expect(body).to.haveOwnProperty('message');
+          }));
         it('PATCH, PUT, DELETE status:405 invalid request', () => {
           const invalidMethods = ['patch', 'put', 'delete'];
           const url = '/api/topics/faketopic/articles';
@@ -219,6 +240,12 @@ describe('/', () => {
             expect(body.article.votes).to.equal(100);
             expect(body.article.topic).to.equal('mitch');
             expect(body.article.author).to.equal('butter_bridge');
+          }));
+        it('GET status:404 responds with error message', () => request
+          .get('/api/articles/123456789')
+          .expect(404)
+          .then(({ body }) => {
+            expect(body).to.haveOwnProperty('message');
           }));
         it('PATCH status:200 accepts an object with votes and returns the updated article', () => request
           .patch('/api/articles/1')
@@ -297,6 +324,20 @@ describe('/', () => {
               expect(body.comment.username).to.equal('butter_bridge');
               expect(body.comment.votes).to.equal(0);
             }));
+          it('POST status:400 responds with error message', () => request
+            .post('/api/articles/1/comments')
+            .send({ username: 1212121, title: 'up', body: {} })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body).to.haveOwnProperty('message');
+            })
+            .then(() => request
+              .post('/api/articles/1/comments')
+              .send({ doesnt: 'sdada', exist: 'up' })
+              .expect(400))
+            .then(({ body }) => {
+              expect(body).to.haveOwnProperty('message');
+            }));
           it('PATCH, PUT, DELETE status:405 invalid request', () => {
             const invalidMethods = ['patch', 'put', 'delete'];
             const url = '/api/articles/1/comments';
@@ -318,6 +359,7 @@ describe('/', () => {
                     .then(([article]) => expect(article).to.equal(undefined));
                 });
             });
+            // 404 TESTING HERE
             it('PATCH status:200 accepts an object with votes and returns the updated comment', () => {
               request
                 .patch('/api/articles/1/comments/18')
@@ -346,6 +388,7 @@ describe('/', () => {
         });
       });
     });
+
     describe('/users', () => {
       it('GET status:200 responds with an array of user objects', () => request
         .get('/api/users')
@@ -376,6 +419,7 @@ describe('/', () => {
             avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg',
             name: 'jonny',
           })));
+        // 404 TESTING HERE
         it('POST, PATCH, PUT, DELETE status:405 invalid request', () => {
           const invalidMethods = ['post', 'patch', 'put', 'delete'];
           const url = '/api/users/butter_bridge';
