@@ -190,6 +190,14 @@ describe('/', () => {
         .then(({ body }) => {
           expect(body.articles).to.have.length('2');
         }));
+      it('PATCH, PUT, DELETE status:405 invalid request', () => {
+        const invalidMethods = ['patch', 'put', 'delete'];
+        const url = '/api/articles';
+        const invalidRequests = invalidMethods.map(method => request[method](url).expect(405));
+        return Promise.all(invalidRequests).then((requests) => {
+          expect(requests[0].body).to.have.haveOwnProperty('message');
+        });
+      });
       describe('/:article_id', () => {
         it('GET status:200 responds with an article object', () => request
           .get('/api/articles/1')
@@ -233,6 +241,14 @@ describe('/', () => {
               .where({ article_id: 1 })
               .then(([article]) => expect(article).to.equal(undefined));
           }));
+        it('POST, PUT status:405 invalid request', () => {
+          const invalidMethods = ['post', 'put'];
+          const url = '/api/articles/1';
+          const invalidRequests = invalidMethods.map(method => request[method](url).expect(405));
+          return Promise.all(invalidRequests).then((requests) => {
+            expect(requests[0].body).to.have.haveOwnProperty('message');
+          });
+        });
         describe('/comments', () => {
           it('GET status:200 responds with an array of comments for the given article_id', () => request
             .get('/api/articles/1/comments')
@@ -281,6 +297,14 @@ describe('/', () => {
               expect(body.comment.username).to.equal('butter_bridge');
               expect(body.comment.votes).to.equal(0);
             }));
+          it('PATCH, PUT, DELETE status:405 invalid request', () => {
+            const invalidMethods = ['patch', 'put', 'delete'];
+            const url = '/api/articles/1/comments';
+            const invalidRequests = invalidMethods.map(method => request[method](url).expect(405));
+            return Promise.all(invalidRequests).then((requests) => {
+              expect(requests[0].body).to.have.haveOwnProperty('message');
+            });
+          });
           describe('/:comment_id', () => {
             it('DELETE status:204 deletes the comment at given comment_id and and responds with no-content', () => {
               request
@@ -310,6 +334,14 @@ describe('/', () => {
                   });
                 });
             });
+            it('GET, PUT, POST status:405 invalid request', () => {
+              const invalidMethods = ['get', 'put', 'post'];
+              const url = '/api/articles/1/comments/18';
+              const invalidReqs = invalidMethods.map(method => request[method](url).expect(405));
+              return Promise.all(invalidReqs).then((requests) => {
+                expect(requests[0].body).to.have.haveOwnProperty('message');
+              });
+            });
           });
         });
       });
@@ -326,6 +358,15 @@ describe('/', () => {
             name: 'jonny',
           });
         }));
+      it('POST, PATCH, PUT, DELETE status:405 invalid request', () => {
+        const invalidMethods = ['post', 'patch', 'put', 'delete'];
+        const url = '/api/users';
+        const invalidRequests = invalidMethods.map(method => request[method](url).expect(405));
+        return Promise.all(invalidRequests).then((requests) => {
+          expect(requests[0].body).to.have.haveOwnProperty('message');
+        });
+      });
+
       describe('/:username', () => {
         it('GET status:200 responds with a user object', () => request
           .get('/api/users/butter_bridge')
@@ -335,6 +376,14 @@ describe('/', () => {
             avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg',
             name: 'jonny',
           })));
+        it('POST, PATCH, PUT, DELETE status:405 invalid request', () => {
+          const invalidMethods = ['post', 'patch', 'put', 'delete'];
+          const url = '/api/users/butter_bridge';
+          const invalidRequests = invalidMethods.map(method => request[method](url).expect(405));
+          return Promise.all(invalidRequests).then((requests) => {
+            expect(requests[0].body).to.have.haveOwnProperty('message');
+          });
+        });
       });
     });
   });

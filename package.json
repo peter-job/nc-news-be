@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon listen.js",
     "test": "psql -f db/setup-test.sql && mocha spec/",
-    "lint": "eslint ./",
+    "lint": "eslint ./ --fix",
     "pre-commit": "npm t",
     "posttest": "npm run lint",
     "migrate:make": "knex migrate:make",

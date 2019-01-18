@@ -28,10 +28,13 @@ router
 router
   .route('/:article_id/comments')
   .get(getCommentsForArticle)
-  .post(postCommentForArticle);
+  .post(postCommentForArticle)
+  .all(handle405);
 
 router
   .route('/:article_id/comments/:comment_id')
   .patch(patchCommentVotes)
-  .delete(deleteComment);
+  .delete(deleteComment)
+  .all(handle405);
+
 module.exports = router;
