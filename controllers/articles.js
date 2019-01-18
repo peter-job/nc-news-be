@@ -100,15 +100,16 @@ exports.getArticleById = (req, res, next) => {
 
 exports.patchArticleVotes = (req, res, next) => {
   const params = { 'articles.article_id': req.params.article_id };
+  const { inc_votes = 0 } = req.body;
   connection('articles')
     .where(params)
-    .increment('votes', req.body.inc_votes)
+    .increment('votes', inc_votes)
     .returning('*')
     .then(([article]) => {
+      if (!article) return Promise.reject({ status: 404 });
       const { username: author, ...restOfProperties } = article;
       const formattedArticle = { author, ...restOfProperties };
-      if (!article) next({ status: 404 });
-      else res.status(200).send({ article: formattedArticle });
+      return res.status(200).send({ article: formattedArticle });
     })
     .catch(next);
 };
@@ -120,6 +121,9 @@ exports.deleteArticleById = (req, res, next) => {
     .then(() => connection('articles')
       .where(req.params)
       .del())
-    .then(() => res.status(204).send({}))
+    .then((deleteCount) => {
+      if (!deleteCount) return Promise.reject({ status: 404 });
+      return res.status(204).send({});
+    })
     .catch(next);
 };

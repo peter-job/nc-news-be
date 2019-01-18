@@ -15,7 +15,8 @@ exports.getCommentsForArticle = (req, res, next) => {
     .offset((p - 1) * limit)
     .orderBy(sort_by_clean, order_clean)
     .then((comments) => {
-      res.status(200).send({ comments });
+      if (comments.length === 0) return Promise.reject({ status: 404 });
+      return res.status(200).send({ comments });
     })
     .catch(next);
 };
@@ -33,16 +34,18 @@ exports.postCommentForArticle = (req, res, next) => {
 };
 
 exports.patchCommentVotes = (req, res, next) => {
+  const { inc_votes = 0 } = req.body;
   const params = { 'comments.comment_id': req.params.comment_id };
   connection('comments')
     .where(params)
-    .increment('votes', req.body.inc_votes)
+    .increment('votes', inc_votes)
+    .where(req.params)
     .returning('*')
     .then(([comment]) => {
-      if (!comment) next({ status: 404 });
+      if (!comment) return Promise.reject({ status: 404 });
       const { username: author, ...restOfProperties } = comment;
       const formattedComment = { author, ...restOfProperties };
-      res.status(200).send({ comment: formattedComment });
+      return res.status(200).send({ comment: formattedComment });
     })
     .catch(next);
 };
