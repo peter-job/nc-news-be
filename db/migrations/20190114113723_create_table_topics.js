@@ -4,7 +4,7 @@ exports.up = function (knex, Promise) {
       .string('slug')
       .primary()
       .unique();
-    table.string('description');
+    table.string('description').notNullable();
   });
 };
 

@@ -120,5 +120,6 @@ exports.deleteArticleById = (req, res, next) => {
     .then(() => connection('articles')
       .where(req.params)
       .del())
-    .then(() => res.status(204).send({}));
+    .then(() => res.status(204).send({}))
+    .catch(next);
 };
