@@ -17,14 +17,15 @@ describe('/', () => {
   after(() => {
     connection.destroy();
   });
-  // tests
-  it('GET status:404 responds with error message', () => request
-    .get('/amadeupendpoint')
-    .expect(404)
-    .then(({ body }) => {
-      expect(body).to.haveOwnProperty('message');
-    }));
 
+  it('GET, POST, PATCH, PUT, DELETE status:404 invalid request', () => {
+    const invalidMethods = ['get', 'post', 'patch', 'put', 'delete'];
+    const url = '/madeupendpoint';
+    const invalidRequests = invalidMethods.map(method => request[method](url).expect(404));
+    return Promise.all(invalidRequests).then((requests) => {
+      expect(requests[0].body).to.have.haveOwnProperty('message');
+    });
+  });
   describe('/api', () => {
     it('GET status 200 responds with json describing all endpoints in api', () => request
       .get('/api')

@@ -4,6 +4,7 @@
   "description": "## Northcoders News API",
   "main": "index.js",
   "scripts": {
+    "start": "node listen.js",
     "dev": "nodemon listen.js",
     "setup:dbs": "psql -f setup-dev.sql && psql -f setup-test.sql",
     "test": "psql -f db/setup-test.sql && mocha spec/",
@@ -13,7 +14,10 @@
     "migrate:make": "knex migrate:make",
     "migrate:latest": "knex migrate:latest",
     "migrate:rollback": "knex migrate:rollback",
-    "seed:run": "psql -f db/setup-dev.sql && knex migrate:latest && knex seed:run"
+    "seed:run": "psql -f db/setup-dev.sql && knex migrate:latest && knex seed:run",
+    "seed:prod": "DB_URL=$(heroku config:get DATABASE_URL) knex seed:run --env production",
+    "migrate:latest:prod": "DB_URL=$(heroku config:get DATABASE_URL) knex migrate:latest --env production",
+    "migrate:rollback:prod": "DB_URL=$(heroku config:get DATABASE_URL) knex migrate:rollback --env production"
   },
   "repository": {
     "type": "git",
