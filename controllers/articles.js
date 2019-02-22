@@ -5,7 +5,14 @@ exports.getArticles = (req, res, next) => {
     limit = 10, p = 1, sort_by = 'created_at', order = 'desc',
   } = req.query;
 
-  const validSortCriteria = ['votes', 'created_at', 'topic', 'title', 'comment_count', 'username'];
+  const validSortCriteria = [
+    'votes',
+    'created_at',
+    'topic',
+    'title',
+    'comment_count',
+    'articles.username',
+  ];
   const sort_by_clean = validSortCriteria.includes(sort_by) ? sort_by : 'created_at';
   const order_clean = order === 'asc' ? 'asc' : 'desc';
 
@@ -36,7 +43,14 @@ exports.getArticlesByTopic = (req, res, next) => {
     limit = 10, p = 1, sort_by = 'created_at', order = 'desc',
   } = req.query;
 
-  const validSortCriteria = ['votes', 'title', 'created_at', 'topic', 'comment_count', 'username'];
+  const validSortCriteria = [
+    'votes',
+    'title',
+    'created_at',
+    'topic',
+    'comment_count',
+    'articles.username',
+  ];
   const sort_by_clean = validSortCriteria.includes(sort_by) ? sort_by : 'created_at';
   const order_clean = order === 'asc' ? 'asc' : 'desc';
 
