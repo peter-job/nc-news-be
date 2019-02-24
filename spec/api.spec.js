@@ -409,8 +409,22 @@ describe('/', () => {
             name: 'jonny',
           });
         }));
-      it('POST, PATCH, PUT, DELETE status:405 invalid request', () => {
-        const invalidMethods = ['post', 'patch', 'put', 'delete'];
+      it('POST status:201 responds with posted user', () => request
+        .post('/api/users')
+        .send({ name: 'Tony S', username: 'mrsoprano', avatar_url: 'https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/Tony_Soprano.jpg/270px-Tony_Soprano.jpg' })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.user).to.eql({ name: 'Tony S', username: 'mrsoprano', avatar_url: 'https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/Tony_Soprano.jpg/270px-Tony_Soprano.jpg' });
+        }));
+      it('POST status:400 responds with error message', () => request
+        .post('/api/users')
+        .send({ username: 'mr', property: 'fake' })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body).to.haveOwnProperty('message');
+        }));
+      it('PATCH, PUT, DELETE status:405 invalid request', () => {
+        const invalidMethods = ['patch', 'put', 'delete'];
         const url = '/api/users';
         const invalidRequests = invalidMethods.map(method => request[method](url).expect(405));
         return Promise.all(invalidRequests).then((requests) => {

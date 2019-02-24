@@ -17,3 +17,14 @@ exports.getUserById = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.postUser = (req, res, next) => {
+  const { body } = req;
+  connection('users')
+    .insert(body)
+    .returning('*')
+    .then(([user]) => {
+      res.status(201).send({ user });
+    })
+    .catch(next);
+};
