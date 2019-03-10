@@ -14,10 +14,7 @@ exports.getCommentsForArticle = (req, res, next) => {
     .limit(limit)
     .offset((p - 1) * limit)
     .orderBy(sort_by_clean, order_clean)
-    .then((comments) => {
-      if (comments.length === 0) return Promise.reject({ status: 404 });
-      return res.status(200).send({ comments });
-    })
+    .then(comments => res.status(200).send({ comments }))
     .catch(next);
 };
 
