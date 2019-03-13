@@ -102,7 +102,7 @@ To run the tests, run the command `npm test` in your terminal. This will drop an
         }));
 ```
 
-Each `describe` block represents an endpoint on the api, and each `it` block creates a new valid or invalid http request to that endpoint. The API must responds must match the assertions written in `expect` statements for the particular test to pass.
+Each `describe` block represents an endpoint on the api, and each `it` block creates a new valid or invalid http request to that endpoint. The API responds must match the assertions written in `expect` statements for the particular test to pass.
 
 All endpoints on the API are tested for possible http requests.
 
