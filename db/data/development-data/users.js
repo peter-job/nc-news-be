@@ -31,6 +31,6 @@ module.exports = [
     username: 'jessjelly',
     name: 'Jess Jelly',
     avatar_url:
-      'https://s-media-cache-ak0.pinimg.com/564x/39/62/ec/3962eca164e60cf46f979c1f57d4078b.jpg',
+      'https://vignette.wikia.nocookie.net/mrmen/images/6/64/Mr_Jelly_7A.png/revision/latest/scale-to-width-down/145?cb=20180929012641',
   },
 ];
