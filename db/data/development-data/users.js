@@ -19,7 +19,8 @@ module.exports = [
   {
     username: 'cooljmessy',
     name: 'Peter Messy',
-    avatar_url: 'http://clipart-library.com/images/8izx9KBip.jpg',
+    avatar_url:
+      'https://shop.mrmen.com/wp-content/themes/mrmen/assets/characterpic-square-mr%20messy.jpg',
   },
   {
     username: 'weegembump',
