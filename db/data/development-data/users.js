@@ -19,8 +19,7 @@ module.exports = [
   {
     username: 'cooljmessy',
     name: 'Peter Messy',
-    avatar_url:
-      'https://shop.mrmen.com/wp-content/themes/mrmen/assets/characterpic-square-mr%20messy.jpg',
+    avatar_url: 'https://vignette.wikia.nocookie.net/mrmen/images/e/ed/Mr-Messy_8a.jpg',
   },
   {
     username: 'weegembump',
